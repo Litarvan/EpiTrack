@@ -1,0 +1,20 @@
+version: '3'
+services:
+  epitrack:
+    image: epitrack
+    build: .
+    restart: always
+    env_file: ./vars.env
+    volumes:
+      - ./data:/var/run/epitrack/UserData
+      - ./logs:/var/run/epitrack/Logs
+    expose:
+      - "2350/tcp"
+      - "2350/udp"
+      - "3450/tcp"
+      - "3450/udp"
+    ports:
+      - "2350:2350/tcp"
+      - "3450:3450/tcp"
+      - "2350:2350/udp"
+      - "3450:3450/udp"

@@ -1,0 +1,24 @@
+.idea/
+
+logs/*
+!logs/.gitkeep
+
+data/Actions
+data/Blocks
+data/Config/*
+!data/Config/server.xml
+data/Items
+data/Maps/Campaings
+data/Maps/Downloaded
+data/Maps/MatchSettings/*
+!data/Maps/MatchSettings/match.xml
+data/Maps/My Maps/*
+!data/Maps/My Maps/.gitkeep
+data/Media
+data/Modules
+data/Packs
+data/Replays
+data/Scripts
+data/Skins
+
+vars.env
