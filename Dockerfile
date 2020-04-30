@@ -1,21 +1,20 @@
-FROM alpine:3.11.6
+FROM python:3.8
 
 LABEL maintainer="Adrien Navratil <adrien1975@live.fr>"
 
-# Inspired from : https://github.com/PyPlanet/maniaplanet-docker
-# Thanks to Tom Valk :^)
+# Inspired from : https://github.com/PyPlanet/maniaplanet-docker and https://github.com/PyPlanet/docker
+# Thanks to Tom Valk <tomvalk@lt-box.info> :^)
 
 ENV SERVER_URL http://files.v04.maniaplanet.com/server/ManiaplanetServer_Latest.zip
 ENV SERVER_ROOT /var/run/epitrack
 ENV USER epitrack
 
 # We create the server runner user
-RUN addgroup -g 1000 $USER && adduser -u 1000 -D -G $USER $USER
+RUN addgroup --gid 1000 $USER && adduser -u 1000 --group $USER --system
 
-# Link the musl to glibc as it's compatible (required in Alpine image).
-RUN wget -q -O /etc/apk/keys/sgerrand.rsa.pub https://alpine-pkgs.sgerrand.com/sgerrand.rsa.pub \
- && wget -q https://github.com/sgerrand/alpine-pkg-glibc/releases/download/2.31-r0/glibc-2.31-r0.apk \
- && apk add glibc-2.31-r0.apk libstdc++ musl libuuid wget
+RUN apt-get -q update \
+  && apt-get install -y build-essential libssl-dev libffi-dev zlib1g-dev \
+  && rm -rf /var/lib/apt/lists/*
 
 ENV LD_LIBRARY_PATH="$LD_LIBRARY_PATH:/usr/lib/:/lib/"
 
@@ -30,6 +29,16 @@ RUN unzip -q /tmp/server.zip -d ./ \
     && rm -rf ./*.bat ./*.exe ./*.html ./RemoteControlExamples
 
 COPY scripts/starter.sh ./start.sh
+
+# Install PyPlanet
+RUN pip3 install pyplanet --upgrade
+
+RUN pyplanet init_project controller
+RUN rm -r controller/settings
+
+# Cleaning
+RUN rm -rf /root/.cache
+RUN apt-get remove -y --autoremove libssl-dev build-essential libffi-dev zlib1g-dev
 
 # Setting permissions
 RUN chown -R $USER:$USER ./

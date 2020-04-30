@@ -17,7 +17,16 @@ echo
     /dedicated_cfg=server.xml \
     /game_settings=MatchSettings/match.xml \
     /login=${LOGIN} \
-    /password=${PASSWORD}
+    /password=${PASSWORD} &
 
-echo "Stopped"
+sleep 10
+
+echo
+echo "=> Starting PyPlanet server controller"
+cd controller
+IS_DOCKER=1 ./manage.py start --pool=default --settings=settings
+cd ..
+
+echo
+echo "=> Stopped"
 echo

@@ -2,14 +2,12 @@
 
 **Requires [Docker](https://docker.com/)** 
 
-**UASECO support comming soon**
-
 ## Default settings
 
 - TrackMania 2 Stadium
 - 50 maximum players
-- Hidden from the server list
 - Time Attack game mode
+- PyPlanet with default settings and apps
 
 ## Setting up
 

@@ -8,6 +8,7 @@ services:
     volumes:
       - ./data:/var/run/epitrack/UserData
       - ./logs:/var/run/epitrack/Logs
+      - ./controller:/var/run/epitrack/controller/settings
     expose:
       - "2350/tcp"
       - "2350/udp"
@@ -18,3 +19,12 @@ services:
       - "3450:3450/tcp"
       - "2350:2350/udp"
       - "3450:3450/udp"
+  db:
+    image: mysql:5.7
+    restart: always
+    environment:
+      MYSQL_DATABASE: pyplanet
+      MYSQL_USER: pyplanet
+      MYSQL_PASSWORD: pyplanet
+      MYSQL_ROOT_PASSWORD: pyplanet
+    command: mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci --innodb-flush-log-at-trx-commit=0
