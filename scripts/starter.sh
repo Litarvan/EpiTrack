@@ -1,11 +1,13 @@
 #!/bin/sh
 echo "EpiTrack TM2 dedicated server"
 
-PACK=TMStadium@nadeo.Title.Pack.gbx
+PACK=./UserData/Packs/esl_comp.lt_forever.Title.Pack.gbx
 
-echo "=> Downloading newest TMStadium title version"
-mkdir -p ./UserData/Packs
-wget https://v4.live.maniaplanet.com/ingame/public/titles/download/$PACK -qO ./UserData/Packs/$PACK
+if ! [ -f $PACK ]; then
+  echo "=> Downloading ESL Competition title pack"
+  mkdir -p ./UserData/Packs
+  wget https://github.com/KemTM/competition-titlepack/releases/download/v0.4.6/esl_comp.lt_forever.Title.Pack.gbx -qO $PACK
+fi
 
 echo "=> Starting server on ${HOST}, login=${LOGIN}"
 echo
@@ -13,7 +15,6 @@ echo
 ./ManiaPlanetServer $@ \
     /nodaemon \
     /forceip=${HOST} \
-    /title=TMStadium@nadeo \
     /dedicated_cfg=server.xml \
     /game_settings=MatchSettings/match.xml \
     /login=${LOGIN} \

@@ -1,7 +1,6 @@
 .idea/
 
-logs/*
-!logs/.gitkeep
+controller/__pycache__
 
 data/Actions
 data/Blocks
@@ -20,5 +19,11 @@ data/Packs
 data/Replays
 data/Scripts
 data/Skins
+
+db/*
+!db/.gitkeep
+
+logs/*
+!logs/.gitkeep
 
 vars.env

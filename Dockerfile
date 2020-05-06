@@ -1,4 +1,4 @@
-FROM python:3.8
+FROM python:3.8-slim
 
 LABEL maintainer="Adrien Navratil <adrien1975@live.fr>"
 
@@ -9,41 +9,43 @@ ENV SERVER_URL http://files.v04.maniaplanet.com/server/ManiaplanetServer_Latest.
 ENV SERVER_ROOT /var/run/epitrack
 ENV USER epitrack
 
-# We create the server runner user
-RUN addgroup --gid 1000 $USER && adduser -u 1000 --group $USER --system
-
-RUN apt-get -q update \
-  && apt-get install -y build-essential libssl-dev libffi-dev zlib1g-dev \
-  && rm -rf /var/lib/apt/lists/*
-
 ENV LD_LIBRARY_PATH="$LD_LIBRARY_PATH:/usr/lib/:/lib/"
 
-# Setup the root and install the dedicated server
+# Creating the server runner user
+RUN addgroup --gid 1000 $USER && adduser -u 1000 --group $USER --system
+
+# Setting up the root
 RUN mkdir -p $SERVER_ROOT
 WORKDIR $SERVER_ROOT
 
-RUN wget $SERVER_URL -qO /tmp/server.zip
-
-RUN unzip -q /tmp/server.zip -d ./ \
-    && rm /tmp/server.zip \
-    && rm -rf ./*.bat ./*.exe ./*.html ./RemoteControlExamples
-
 COPY scripts/starter.sh ./start.sh
 
-# Install PyPlanet
-RUN pip3 install pyplanet --upgrade
-
-RUN pyplanet init_project controller
-RUN rm -r controller/settings
-
-# Cleaning
-RUN rm -rf /root/.cache
-RUN apt-get remove -y --autoremove libssl-dev build-essential libffi-dev zlib1g-dev
-
-# Setting permissions
-RUN chown -R $USER:$USER ./
-RUN chmod u+x ./start.sh
-RUN chmod u+x ./ManiaPlanetServer
+# Installing
+RUN \
+    # Installing the dependencies
+    apt-get -q update && \
+    apt-get install -y build-essential libssl-dev libffi-dev zlib1g-dev wget unzip && \
+    rm -rf /var/lib/apt/lists/* && \
+    \
+    # Installing the server
+    wget $SERVER_URL -qO /tmp/server.zip && \
+    unzip -q /tmp/server.zip -d ./ && \
+    rm /tmp/server.zip && \
+    rm -rf ./*.bat ./*.exe ./*.html ./RemoteControlExamples && \
+    \
+    # Installing the PyPlanet controller
+    pip3 install pyplanet --upgrade && \
+    pyplanet init_project controller && \
+    rm -r controller/settings && \
+    \
+    # Cleaning
+    rm -rf /root/.cache && \
+    apt-get remove -y --autoremove --purge libssl-dev build-essential libffi-dev zlib1g-dev wget unzip && \
+    \
+    # Setting permissions
+    chown -R $USER:$USER ./ && \
+    chmod u+x ./start.sh && \
+    chmod u+x ./ManiaPlanetServer
 
 # Setting up !
 USER $USER
